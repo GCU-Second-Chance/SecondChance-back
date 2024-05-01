@@ -47,30 +47,38 @@ public class KakaoServiceImpl implements KakaoService {
 
     @Override
     public String getAccessToken(String code) {
+        String accessToken;
+        KakaoDto kakaoDto;
         String refreshToken;
+
         try {
-            System.out.println("카카오에 액세스 토큰 요청");
-            Mono<KakaoDto> mono = WebClient.builder()
-                    .baseUrl(baseUrl)
-                    .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build()
-                    .post() //어떤 요청인가 .
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/oauth/token")
-                            .queryParam("grant_type", "authorization_code")
-                            .queryParam("client_id", client_id)
-                            .queryParam("redirect_uri", redirect_uri)
-                            .queryParam("code", code)
-                            .queryParam("client_secret", client_secret)
-                            .build()) //.toUri() 는 안써도 됨
-                    .retrieve()
-                    .bodyToMono(KakaoDto.class);
-            KakaoDto kakaoDto = mono.block();
-            System.out.println("카카오로부터 액세스 토큰을 받음");
-            String accessToken = kakaoDto.getAccessToken();
-            System.out.println(accessToken);
-            return accessToken;
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> entity = new HttpEntity<>("", headers);
+
+            URI uri = UriComponentsBuilder
+                .fromUriString(baseUrl)
+                .path("/oauth/token")
+                .queryParam("grant_type", "authorization_code")
+                .queryParam("client_id", client_id)
+                .queryParam("redirect_uri", redirect_uri)
+                .queryParam("code", code)
+                .queryParam("client_secret", client_secret)
+                .encode().build().toUri();
+
+            RestTemplate restTemplate = new RestTemplate();
+            kakaoDto = restTemplate.postForObject(uri, entity, KakaoDto.class);
+
+            if(kakaoDto.getAccessToken() != null){
+                System.out.println("성공적으로 토큰 받기 성공!");
+                accessToken = kakaoDto.getAccessToken();
+                return accessToken;
+            }else{
+                System.out.println("토큰 받기 실패!");
+                return null;
+            }
         }
         catch (Exception e){
             return null;
