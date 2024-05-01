@@ -36,13 +36,13 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
-    @Value("{$kakao.request.getAccessToken.url}")
+    @Value("${kakao.request.getAccessToken.url}")
     private String baseUrl;
-    @Value("{$kakao.request.client_id}")
+    @Value("${kakao.request.client_id}")
     private String client_id;
-    @Value("{$kakao.redirect_uri")
+    @Value("${kakao.redirect_uri}")
     String redirect_uri;
-    @Value("{$kakao.client_secret")
+    @Value("${kakao.client_secret}")
     String client_secret;
 
     @Override
