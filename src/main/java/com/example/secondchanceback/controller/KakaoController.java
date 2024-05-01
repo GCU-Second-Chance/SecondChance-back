@@ -1,9 +1,13 @@
 package com.example.secondchanceback.controller;
 
-import com.example.secondchanceback.entity.KakaoLoginEntity;
-import com.example.secondchanceback.entity.KakaoLogoutEntity;
+import com.example.secondchanceback.dto.KakaoLogoutDto;
+import com.example.secondchanceback.service.KakaoService;
+import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,15 +20,25 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController("/v1/login")
+@RequiredArgsConstructor
 public class KakaoController {
 
+    private final KakaoService kakaoService;
+
     @PostMapping("/kakao-login")
-    public String kakaoLogin(@RequestBody KakaoLoginEntity kakaoLoginEntity){
-        return "ok";
+    public ResponseEntity<String> kakaoLogin(@RequestParam("code") String code){
+        System.out.println("get code = " + code);
+
+        System.out.println("request getAccessToken()");
+        String accessToken = kakaoService.getAccessToken(code);
+        System.out.println("response getAccessToken()");
+        System.out.println("accessToken : " + accessToken);
+
+        return ResponseEntity.ok().body(accessToken);
     }
 
     @PostMapping("/kakao-logout")
-    public String kakaoLogout(@RequestBody KakaoLogoutEntity kakaoLogoutEntity){
+    public String kakaoLogout(@RequestBody KakaoLogoutDto kakaoLogoutDto){
         return "ok";
     }
 }

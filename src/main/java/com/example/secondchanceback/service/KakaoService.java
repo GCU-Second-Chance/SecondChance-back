@@ -10,7 +10,7 @@ package com.example.secondchanceback.service;
  */
 public interface KakaoService {
 
-    public String getAccessToken(String token);
+    public String getAccessToken(String code);
 
     public String getUserInfo(String accessToken);
 
