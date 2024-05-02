@@ -1,9 +1,8 @@
 package com.example.secondchanceback.controller;
 
-import com.example.secondchanceback.dto.KakaoLogoutDto;
+import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.service.KakaoService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +23,10 @@ public class KakaoController {
 
     private final KakaoService kakaoService;
 
-    @GetMapping("/kakao-login")
+    @PostMapping("/kakao-login")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<String> kakaoLogin(@RequestParam("code") String code) {
+    public ResponseEntity<String> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
+        String code = kakaoLoginDto.getCode();
         System.out.println("get code = " + code);
 
         System.out.println("request getAccessToken()");
@@ -41,7 +41,7 @@ public class KakaoController {
     }
 
     @PostMapping("/kakao-logout")
-    public String kakaoLogout(@RequestBody KakaoLogoutDto kakaoLogoutDto){
+    public String kakaoLogout(@RequestBody KakaoLoginDto kakaoLoginDto){
         return "ok";
     }
 }

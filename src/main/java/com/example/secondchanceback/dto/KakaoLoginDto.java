@@ -7,6 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class KakaoLogoutDto {
+public class KakaoLoginDto {
     private String code;
 }
