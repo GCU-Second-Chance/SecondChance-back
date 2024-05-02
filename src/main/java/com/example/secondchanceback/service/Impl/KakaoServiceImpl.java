@@ -58,9 +58,11 @@ public class KakaoServiceImpl implements KakaoService {
 
             HttpEntity<String> entity = new HttpEntity<>("", headers);
 
+            String path = "/oauth/token";
+
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
-                .path("/oauth/token")
+                .path(path)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", client_id)
                 .queryParam("redirect_uri", redirect_uri)
@@ -68,6 +70,9 @@ public class KakaoServiceImpl implements KakaoService {
                 .queryParam("client_secret", client_secret)
                 .encode().build().toUri();
 
+            System.out.println(uri);
+
+            System.out.println("카카오에 AccessToken 요청");
             RestTemplate restTemplate = new RestTemplate();
             kakaoDto = restTemplate.postForObject(uri, entity, KakaoDto.class);
 
