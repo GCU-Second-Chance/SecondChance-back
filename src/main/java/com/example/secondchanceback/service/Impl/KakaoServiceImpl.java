@@ -36,8 +36,8 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
-    @Value("${kakao.request.getAccessToken.url}")
     private String baseUrl;
+    private String path;
     @Value("${kakao.request.client_id}")
     private String client_id;
     @Value("${kakao.redirect_uri}")
@@ -57,8 +57,8 @@ public class KakaoServiceImpl implements KakaoService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<String> entity = new HttpEntity<>("", headers);
-
-            String path = "/oauth/token";
+            baseUrl = "https://kauth.kakao.com";
+            path = "/oauth/token";
 
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
@@ -92,6 +92,11 @@ public class KakaoServiceImpl implements KakaoService {
 
     @Override
     public String getUserInfo(String accessToken) {
+        baseUrl = "https://kapi.kakao.com";
+        path = "/v2/user/me";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", " Bearer " + accessToken);
         return "ok";
     }
 

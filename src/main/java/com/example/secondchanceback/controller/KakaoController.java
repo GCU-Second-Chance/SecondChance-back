@@ -25,7 +25,7 @@ public class KakaoController {
     private final KakaoService kakaoService;
 
     @GetMapping("/kakao-login")
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<String> kakaoLogin(@RequestParam("code") String code) {
         System.out.println("get code = " + code);
 
