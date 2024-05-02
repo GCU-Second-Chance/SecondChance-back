@@ -1,6 +1,5 @@
 package com.example.secondchanceback.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -8,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class KakaoDto {
+public class KakaoResponseLoginDto {
 
     private String token_type;
     private String access_token;

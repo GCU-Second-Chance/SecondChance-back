@@ -3,6 +3,8 @@ package com.example.secondchanceback.controller;
 import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.service.KakaoService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +25,26 @@ public class KakaoController {
 
     private final KakaoService kakaoService;
 
+    private final Logger LOGGER = LoggerFactory.getLogger(KakaoController.class);
+
     @PostMapping("/kakao-login")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<String> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
         String code = kakaoLoginDto.getCode();
-        System.out.println("get code = " + code);
+        LOGGER.info("Get Code from FrontEnd : {}", code);
 
-        System.out.println("request getAccessToken()");
+        LOGGER.info("Request getAccessToken()");
         String accessToken = kakaoService.getAccessToken(code);
-        System.out.println("response getAccessToken()");
-        System.out.println("accessToken : " + accessToken);
 
-        if (accessToken != null)
+        if (accessToken != null) {
+            LOGGER.info("Response getAccessToken()");
+            LOGGER.info("access_token : {}", accessToken);
             return ResponseEntity.ok().body(accessToken);
-        else
+        }
+        else{
+            LOGGER.info("Failed getAccessToken()");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @PostMapping("/kakao-logout")

@@ -1,27 +1,17 @@
 package com.example.secondchanceback.service.Impl;
 
-import com.example.secondchanceback.dto.KakaoDto;
-import com.example.secondchanceback.repository.UserRepository;
+import com.example.secondchanceback.dto.KakaoResponseLoginDto;
+import com.example.secondchanceback.dto.KakaoUserInfoDto;
 import com.example.secondchanceback.service.KakaoService;
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
 
 /**
  * @PackageName : com.example.secondchanceback.service.Impl
@@ -35,8 +25,10 @@ import java.util.Arrays;
 @Service
 public class KakaoServiceImpl implements KakaoService {
 
+    private Logger LOGGER = LoggerFactory.getLogger(KakaoServiceImpl.class);
     private String baseUrl;
     private String path;
+
     @Value("${kakao.request.client_id}")
     private String client_id;
     @Value("${kakao.redirect_uri}")
@@ -47,58 +39,78 @@ public class KakaoServiceImpl implements KakaoService {
     @Override
     public String getAccessToken(String code) {
         String accessToken;
-        KakaoDto kakaoDto;
+        KakaoResponseLoginDto kakaoResponseLoginDto;
         String refreshToken;
 
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-            HttpEntity<String> entity = new HttpEntity<>("", headers);
             baseUrl = "https://kauth.kakao.com";
             path = "/oauth/token";
-
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
                 .path(path)
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", client_id)
                 .queryParam("redirect_uri", redirect_uri)
-                    .queryParam("code", code)
-                    .queryParam("client_secret", client_secret)
+                .queryParam("code", code)
+                .queryParam("client_secret", client_secret)
                 .encode().build().toUri();
 
-            MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
+            LOGGER.info("Request AccessToken URI to Kakao : {}", uri);
 
-            System.out.println(uri);
-            System.out.println(entity);
-            System.out.println("카카오에 AccessToken 요청");
+            LOGGER.info("Request AccessToken to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            kakaoDto = restTemplate.postForObject(uri, headers, KakaoDto.class);
+            kakaoResponseLoginDto = restTemplate.postForObject(uri, headers, KakaoResponseLoginDto.class);
 
-            if(kakaoDto.getAccess_token() != null){
-                System.out.println("성공적으로 토큰 받기 성공!");
-                accessToken = kakaoDto.getAccess_token();
+            if(kakaoResponseLoginDto.getAccess_token() != null){
+                LOGGER.info("Response AccessToken from Kakao");
+                accessToken = kakaoResponseLoginDto.getAccess_token();
                 return accessToken;
             }else{
-                System.out.println("토큰 받기 실패!");
+                LOGGER.info("Failed Response AccessToken from Kakao");
                 return null;
             }
         }
         catch (Exception e){
-            System.out.println("요청 실패");
+            LOGGER.info("Failed Request to Kakao");
             return null;
         }
     }
 
     @Override
     public String getUserInfo(String accessToken) {
-        baseUrl = "https://kapi.kakao.com";
-        path = "/v2/user/me";
+        try{
+            baseUrl = "https://kapi.kakao.com";
+            path = "/v2/user/me";
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", " Bearer " + accessToken);
-        return "ok";
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("Authorization", "Bearer " + accessToken);
+            httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+            URI uri = UriComponentsBuilder
+                .fromUriString(baseUrl)
+                .path(path)
+                .encode().build().toUri();
+
+            LOGGER.info("Request UserInfo URI to Kakao : {}", uri);
+
+            LOGGER.info("Request UserInfo to Kakao");
+            RestTemplate restTemplate = new RestTemplate();
+            KakaoUserInfoDto kakaoUserInfoDto= restTemplate.postForObject(uri, httpHeaders, KakaoUserInfoDto.class);
+
+            if(kakaoUserInfoDto.getId() != null){
+                LOGGER.info("Response UserInfo from Kakao : {} ", kakaoUserInfoDto);
+                return "ok";
+            }else{
+                LOGGER.info("Failed Response UserInfo from Kakao");
+                return null;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
