@@ -5,10 +5,10 @@ import com.example.secondchanceback.repository.UserRepository;
 import com.example.secondchanceback.service.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,7 +33,6 @@ import java.util.Arrays;
  */
 
 @Service
-@RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
     private String baseUrl;
@@ -53,8 +52,7 @@ public class KakaoServiceImpl implements KakaoService {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON}));
-            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
             HttpEntity<String> entity = new HttpEntity<>("", headers);
             baseUrl = "https://kauth.kakao.com";
@@ -66,19 +64,21 @@ public class KakaoServiceImpl implements KakaoService {
                 .queryParam("grant_type", "authorization_code")
                 .queryParam("client_id", client_id)
                 .queryParam("redirect_uri", redirect_uri)
-                .queryParam("code", code)
-                .queryParam("client_secret", client_secret)
+                    .queryParam("code", code)
+                    .queryParam("client_secret", client_secret)
                 .encode().build().toUri();
 
-            System.out.println(uri);
+            MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
 
+            System.out.println(uri);
+            System.out.println(entity);
             System.out.println("카카오에 AccessToken 요청");
             RestTemplate restTemplate = new RestTemplate();
-            kakaoDto = restTemplate.postForObject(uri, entity, KakaoDto.class);
+            kakaoDto = restTemplate.postForObject(uri, headers, KakaoDto.class);
 
-            if(kakaoDto.getAccessToken() != null){
+            if(kakaoDto.getAccess_token() != null){
                 System.out.println("성공적으로 토큰 받기 성공!");
-                accessToken = kakaoDto.getAccessToken();
+                accessToken = kakaoDto.getAccess_token();
                 return accessToken;
             }else{
                 System.out.println("토큰 받기 실패!");
@@ -86,6 +86,7 @@ public class KakaoServiceImpl implements KakaoService {
             }
         }
         catch (Exception e){
+            System.out.println("요청 실패");
             return null;
         }
     }
