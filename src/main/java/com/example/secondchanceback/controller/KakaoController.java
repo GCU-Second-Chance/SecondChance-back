@@ -1,6 +1,8 @@
 package com.example.secondchanceback.controller;
 
 import com.example.secondchanceback.dto.KakaoLoginDto;
+import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.entity.UserEntity;
 import com.example.secondchanceback.service.KakaoService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -32,7 +34,7 @@ public class KakaoController {
 
     @PostMapping("/kakao-login")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<String> kakaoLogin(HttpServletRequest httpServletRequest, @RequestBody KakaoLoginDto kakaoLoginDto) {
+    public ResponseEntity<KakaoUserInfoDto> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
         String code = kakaoLoginDto.getCode();
         LOGGER.info("Get Code from FrontEnd : {}", code);
 
@@ -41,7 +43,7 @@ public class KakaoController {
 
         LOGGER.info("access_token : {}", accessToken);
         if(accessToken != null){
-            String result = kakaoService.getUserInfo(accessToken);
+            KakaoUserInfoDto result = kakaoService.getUserInfo(accessToken);
             return ResponseEntity.ok(result);
         }
         else {

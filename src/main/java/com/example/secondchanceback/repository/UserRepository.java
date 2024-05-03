@@ -1,5 +1,8 @@
 package com.example.secondchanceback.repository;
 
+import com.example.secondchanceback.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 /**
  * @PackageName : com.example.secondchanceback.repository
  * @FileName : UserRepository
@@ -8,6 +11,5 @@ package com.example.secondchanceback.repository;
  * @Blog : https://blog.naver.com/noglass_gongdae
  * @GitHub :
  */
-public interface UserRepository {
-
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 }

@@ -3,6 +3,8 @@ package com.example.secondchanceback.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.JsonObject;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Properties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,5 +33,5 @@ public class KakaoUserInfoDto {
 //    @JsonProperty("synched_at")
 //    private LocalDateTime synched_at;
     @JsonProperty("properties")
-    private JsonObject properties;
+    private HashMap<String, String> properties;
 }

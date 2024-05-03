@@ -2,6 +2,8 @@ package com.example.secondchanceback.service.Impl;
 
 import com.example.secondchanceback.dto.KakaoResponseLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.entity.UserEntity;
+import com.example.secondchanceback.repository.UserRepository;
 import com.example.secondchanceback.service.KakaoService;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,7 +14,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +37,10 @@ import java.net.URI;
  */
 
 @Service
+@RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
+    private final UserRepository userRepository;
     private Logger LOGGER = LoggerFactory.getLogger(KakaoServiceImpl.class);
     private String baseUrl;
     private String path;
@@ -90,7 +96,7 @@ public class KakaoServiceImpl implements KakaoService {
     }
 
     @Override
-    public String getUserInfo(String accessToken) {
+    public KakaoUserInfoDto getUserInfo(String accessToken) {
         try{
             baseUrl = "https://kapi.kakao.com/v2/user/me";
 
@@ -106,12 +112,21 @@ public class KakaoServiceImpl implements KakaoService {
 
             LOGGER.info("Request UserInfo to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(uri, httpEntity, String.class);
+            ResponseEntity<KakaoUserInfoDto> responseEntity = restTemplate.postForEntity(uri, httpEntity, KakaoUserInfoDto.class);
 
-            System.out.println(responseEntity);
-            return "ok";
+            if(responseEntity.getStatusCode() == HttpStatus.OK){
+                LOGGER.info("Response UserInfo from Kakao");
+                UserEntity entity = new UserEntity(responseEntity.getBody().getId(),
+                    responseEntity.getBody().getProperties().get("nickname"), "");
+                userRepository.save(entity);
+                return responseEntity.getBody();
+            }
+            else{
+                LOGGER.info("Failed Response UserInfo from Kakao, statusCode : {}", responseEntity.getStatusCode());
+                return null;
+            }
         }catch (Exception e) {
-            LOGGER.info("Failed Request UserInfo");
+            e.printStackTrace();
             return null;
         }
     }
