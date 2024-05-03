@@ -33,23 +33,25 @@ public class KakaoController {
     @PostMapping("/kakao-login")
     @CrossOrigin(origins = "http://localhost:5173")
     public ResponseEntity<String> kakaoLogin(HttpServletRequest httpServletRequest, @RequestBody KakaoLoginDto kakaoLoginDto) {
-        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
-        while (headerNames != null && headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            System.out.println("Header Name: " + headerName);
-        }
         String code = kakaoLoginDto.getCode();
         LOGGER.info("Get Code from FrontEnd : {}", code);
 
         LOGGER.info("Request getAccessToken()");
         String accessToken = kakaoService.getAccessToken(code);
 
-        HashMap<Boolean, ResponseEntity<String>> hashMap = new HashMap<>();
         LOGGER.info("access_token : {}", accessToken);
-        hashMap.put(true, ResponseEntity.ok().body(kakaoService.getUserInfo(accessToken)));
-        hashMap.put(false, ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
-
-        return hashMap.get(accessToken != null);
+        if(accessToken != null){
+            String result = kakaoService.getUserInfo(accessToken);
+            return ResponseEntity.ok(result);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        // accessToken이 null임에도 getUserInfo를 부름.
+        // 안부르게 끔 위의 방법을 포함하여
+        // 1. map에서 true, false를 사용하여 해봄
+        // 2. getAccessToken을 map객체로 반환하게끔 하여 accessToken이 있으면 true, 없으면 false로 하여 isEmpty 함수로 체크하여 부름
+        // 위의 두 방법 전부 소용없음. 그냥 getUserInfo를 부름.
     }
 
     @PostMapping("/kakao-logout")

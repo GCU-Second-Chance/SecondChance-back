@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class KakaoServiceImpl implements KakaoService {
         String accessToken;
         KakaoResponseLoginDto kakaoResponseLoginDto;
         String refreshToken;
-
+        Map<String, Boolean> map = new HashMap<>();
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -73,8 +74,6 @@ public class KakaoServiceImpl implements KakaoService {
             RestTemplate restTemplate = new RestTemplate();
             kakaoResponseLoginDto = restTemplate.postForObject(uri, headers, KakaoResponseLoginDto.class);
 
-            HashMap<String, Function<String, String>> hashMap = new HashMap<>();
-
             if(kakaoResponseLoginDto.getAccess_token() != null){
                 LOGGER.info("Response AccessToken from Kakao");
                 accessToken = kakaoResponseLoginDto.getAccess_token();
@@ -93,19 +92,16 @@ public class KakaoServiceImpl implements KakaoService {
     @Override
     public String getUserInfo(String accessToken) {
         try{
-            baseUrl = "https://kapi.kakao.com";
-            path = "/v2/user/me";
+            baseUrl = "https://kapi.kakao.com/v2/user/me";
+
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Authorization", "Bearer " + accessToken);
-            //httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
             HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
 
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
-                .path(path)
                 .encode().build().toUri();
-
             LOGGER.info("Request UserInfo URI to Kakao : {}", uri);
 
             LOGGER.info("Request UserInfo to Kakao");
@@ -115,7 +111,7 @@ public class KakaoServiceImpl implements KakaoService {
             System.out.println(responseEntity);
             return "ok";
         }catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info("Failed Request UserInfo");
             return null;
         }
     }

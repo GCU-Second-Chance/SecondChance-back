@@ -8,7 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class KakaoResponseLoginDto {
-
     private String token_type;
     private String access_token;
     private String id_token;
