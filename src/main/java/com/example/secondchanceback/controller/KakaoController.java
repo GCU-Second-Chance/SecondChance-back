@@ -2,6 +2,9 @@ package com.example.secondchanceback.controller;
 
 import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.service.KakaoService;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,26 +32,28 @@ public class KakaoController {
 
     @PostMapping("/kakao-login")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<String> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
+    public ResponseEntity<String> kakaoLogin(HttpServletRequest httpServletRequest, @RequestBody KakaoLoginDto kakaoLoginDto) {
+        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
+        while (headerNames != null && headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            System.out.println("Header Name: " + headerName);
+        }
         String code = kakaoLoginDto.getCode();
         LOGGER.info("Get Code from FrontEnd : {}", code);
 
         LOGGER.info("Request getAccessToken()");
         String accessToken = kakaoService.getAccessToken(code);
 
-        if (accessToken != null) {
-            LOGGER.info("Response getAccessToken()");
-            LOGGER.info("access_token : {}", accessToken);
-            return ResponseEntity.ok().body(accessToken);
-        }
-        else{
-            LOGGER.info("Failed getAccessToken()");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        HashMap<Boolean, ResponseEntity<String>> hashMap = new HashMap<>();
+        LOGGER.info("access_token : {}", accessToken);
+        hashMap.put(true, ResponseEntity.ok().body(kakaoService.getUserInfo(accessToken)));
+        hashMap.put(false, ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null));
+
+        return hashMap.get(accessToken != null);
     }
 
     @PostMapping("/kakao-logout")
-    public String kakaoLogout(@RequestBody KakaoLoginDto kakaoLoginDto){
+    public String kakaoLogout(){
         return "ok";
     }
 }

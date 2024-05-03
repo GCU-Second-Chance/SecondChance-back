@@ -3,6 +3,15 @@ package com.example.secondchanceback.service.Impl;
 import com.example.secondchanceback.dto.KakaoResponseLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
 import com.example.secondchanceback.service.KakaoService;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +73,8 @@ public class KakaoServiceImpl implements KakaoService {
             RestTemplate restTemplate = new RestTemplate();
             kakaoResponseLoginDto = restTemplate.postForObject(uri, headers, KakaoResponseLoginDto.class);
 
+            HashMap<String, Function<String, String>> hashMap = new HashMap<>();
+
             if(kakaoResponseLoginDto.getAccess_token() != null){
                 LOGGER.info("Response AccessToken from Kakao");
                 accessToken = kakaoResponseLoginDto.getAccess_token();
@@ -84,10 +95,11 @@ public class KakaoServiceImpl implements KakaoService {
         try{
             baseUrl = "https://kapi.kakao.com";
             path = "/v2/user/me";
-
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Authorization", "Bearer " + accessToken);
-            httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+            //httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+            HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
 
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
@@ -98,16 +110,11 @@ public class KakaoServiceImpl implements KakaoService {
 
             LOGGER.info("Request UserInfo to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            KakaoUserInfoDto kakaoUserInfoDto= restTemplate.postForObject(uri, httpHeaders, KakaoUserInfoDto.class);
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(uri, httpEntity, String.class);
 
-            if(kakaoUserInfoDto.getId() != null){
-                LOGGER.info("Response UserInfo from Kakao : {} ", kakaoUserInfoDto);
-                return "ok";
-            }else{
-                LOGGER.info("Failed Response UserInfo from Kakao");
-                return null;
-            }
-        }catch (Exception e){
+            System.out.println(responseEntity);
+            return "ok";
+        }catch (Exception e) {
             e.printStackTrace();
             return null;
         }
