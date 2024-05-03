@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-application-kakao.properties
+application-information.properties
 
 ### STS ###
 .apt_generated
