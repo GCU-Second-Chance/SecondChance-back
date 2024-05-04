@@ -1,8 +1,12 @@
 package com.example.secondchanceback.service.Impl;
 
-import com.example.secondchanceback.dto.KakaoResponseLoginDto;
+import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.dto.UserDto;
+import com.example.secondchanceback.entity.UserEntity;
+import com.example.secondchanceback.repository.UserRepository;
 import com.example.secondchanceback.service.KakaoService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +27,10 @@ import java.net.URI;
  */
 
 @Service
+@RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
+    private final UserRepository userRepository;
     private Logger LOGGER = LoggerFactory.getLogger(KakaoServiceImpl.class);
     private String baseUrl;
     private String path;
@@ -37,11 +43,7 @@ public class KakaoServiceImpl implements KakaoService {
     String client_secret;
 
     @Override
-    public String getAccessToken(String code) {
-        String accessToken;
-        KakaoResponseLoginDto kakaoResponseLoginDto;
-        String refreshToken;
-
+    public KakaoLoginDto getAccessToken(String code) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -62,12 +64,11 @@ public class KakaoServiceImpl implements KakaoService {
 
             LOGGER.info("Request AccessToken to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            kakaoResponseLoginDto = restTemplate.postForObject(uri, headers, KakaoResponseLoginDto.class);
+            ResponseEntity<KakaoLoginDto> responseEntity = restTemplate.postForEntity(uri, headers, KakaoLoginDto.class);
 
-            if(kakaoResponseLoginDto.getAccess_token() != null){
+            if(responseEntity.getStatusCode() == HttpStatus.OK){
                 LOGGER.info("Response AccessToken from Kakao");
-                accessToken = kakaoResponseLoginDto.getAccess_token();
-                return accessToken;
+                return responseEntity.getBody();
             }else{
                 LOGGER.info("Failed Response AccessToken from Kakao");
                 return null;
@@ -80,34 +81,42 @@ public class KakaoServiceImpl implements KakaoService {
     }
 
     @Override
-    public String getUserInfo(String accessToken) {
+    public UserDto getUserInfo(String accessToken) {
         try{
-            baseUrl = "https://kapi.kakao.com";
-            path = "/v2/user/me";
+            baseUrl = "https://kapi.kakao.com/v2/user/me";
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Authorization", "Bearer " + accessToken);
-            httpHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+            HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
 
             URI uri = UriComponentsBuilder
                 .fromUriString(baseUrl)
-                .path(path)
                 .encode().build().toUri();
-
             LOGGER.info("Request UserInfo URI to Kakao : {}", uri);
 
             LOGGER.info("Request UserInfo to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            KakaoUserInfoDto kakaoUserInfoDto= restTemplate.postForObject(uri, httpHeaders, KakaoUserInfoDto.class);
+            ResponseEntity<KakaoUserInfoDto> responseEntity = restTemplate.postForEntity(uri, httpEntity, KakaoUserInfoDto.class);
 
-            if(kakaoUserInfoDto.getId() != null){
-                LOGGER.info("Response UserInfo from Kakao : {} ", kakaoUserInfoDto);
-                return "ok";
-            }else{
-                LOGGER.info("Failed Response UserInfo from Kakao");
+            if(responseEntity.getStatusCode() == HttpStatus.OK){
+                LOGGER.info("Response UserInfo from Kakao");
+                UserEntity userEntity = new UserEntity(responseEntity.getBody().getId(),
+                    responseEntity.getBody().getProperties().get("nickname"), "");
+                UserDto userDto = new UserDto(userEntity.getId(), userEntity.getNickname());
+                if(userRepository.existsById(userEntity.getId())){
+                    LOGGER.info("already member");
+                }
+                else{
+                    userRepository.save(userEntity);
+                    LOGGER.info("save member");
+                }
+                return userDto;
+            }
+            else{
+                LOGGER.info("Failed Response UserInfo from Kakao, statusCode : {}", responseEntity.getStatusCode());
                 return null;
             }
-        }catch (Exception e){
+        }catch (Exception e) {
             e.printStackTrace();
             return null;
         }
