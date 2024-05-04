@@ -1,6 +1,8 @@
 package com.example.secondchanceback.service;
 
+import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.dto.UserDto;
 import com.example.secondchanceback.entity.UserEntity;
 import java.util.Map;
 
@@ -14,9 +16,9 @@ import java.util.Map;
  */
 public interface KakaoService {
 
-    public String getAccessToken(String code);
+    public KakaoLoginDto getAccessToken(String code);
 
-    public KakaoUserInfoDto getUserInfo(String accessToken);
+    public UserDto getUserInfo(String accessToken);
 
     public String logout(String accessToken);
 

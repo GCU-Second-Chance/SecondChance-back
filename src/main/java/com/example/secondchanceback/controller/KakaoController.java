@@ -2,6 +2,7 @@ package com.example.secondchanceback.controller;
 
 import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.dto.UserDto;
 import com.example.secondchanceback.entity.UserEntity;
 import com.example.secondchanceback.service.KakaoService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/login")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class KakaoController {
 
     private final KakaoService kakaoService;
@@ -33,18 +35,18 @@ public class KakaoController {
     private final Logger LOGGER = LoggerFactory.getLogger(KakaoController.class);
 
     @PostMapping("/kakao-login")
-    @CrossOrigin(origins = "http://localhost:5173")
-    public ResponseEntity<KakaoUserInfoDto> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
+    public ResponseEntity<UserDto> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
         String code = kakaoLoginDto.getCode();
         LOGGER.info("Get Code from FrontEnd : {}", code);
 
         LOGGER.info("Request getAccessToken()");
-        String accessToken = kakaoService.getAccessToken(code);
-
+        kakaoLoginDto = kakaoService.getAccessToken(code);
+        String accessToken = kakaoLoginDto.getAccess_token();
         LOGGER.info("access_token : {}", accessToken);
+
         if(accessToken != null){
-            KakaoUserInfoDto result = kakaoService.getUserInfo(accessToken);
-            return ResponseEntity.ok(result);
+            UserDto userDto = kakaoService.getUserInfo(accessToken);
+            return ResponseEntity.ok(userDto);
         }
         else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

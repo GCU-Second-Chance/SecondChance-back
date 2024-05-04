@@ -1,21 +1,11 @@
 package com.example.secondchanceback.service.Impl;
 
-import com.example.secondchanceback.dto.KakaoResponseLoginDto;
+import com.example.secondchanceback.dto.KakaoLoginDto;
 import com.example.secondchanceback.dto.KakaoUserInfoDto;
+import com.example.secondchanceback.dto.UserDto;
 import com.example.secondchanceback.entity.UserEntity;
 import com.example.secondchanceback.repository.UserRepository;
 import com.example.secondchanceback.service.KakaoService;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +43,7 @@ public class KakaoServiceImpl implements KakaoService {
     String client_secret;
 
     @Override
-    public String getAccessToken(String code) {
-        String accessToken;
-        KakaoResponseLoginDto kakaoResponseLoginDto;
-        String refreshToken;
-        Map<String, Boolean> map = new HashMap<>();
+    public KakaoLoginDto getAccessToken(String code) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -78,12 +64,11 @@ public class KakaoServiceImpl implements KakaoService {
 
             LOGGER.info("Request AccessToken to Kakao");
             RestTemplate restTemplate = new RestTemplate();
-            kakaoResponseLoginDto = restTemplate.postForObject(uri, headers, KakaoResponseLoginDto.class);
+            ResponseEntity<KakaoLoginDto> responseEntity = restTemplate.postForEntity(uri, headers, KakaoLoginDto.class);
 
-            if(kakaoResponseLoginDto.getAccess_token() != null){
+            if(responseEntity.getStatusCode() == HttpStatus.OK){
                 LOGGER.info("Response AccessToken from Kakao");
-                accessToken = kakaoResponseLoginDto.getAccess_token();
-                return accessToken;
+                return responseEntity.getBody();
             }else{
                 LOGGER.info("Failed Response AccessToken from Kakao");
                 return null;
@@ -96,13 +81,12 @@ public class KakaoServiceImpl implements KakaoService {
     }
 
     @Override
-    public KakaoUserInfoDto getUserInfo(String accessToken) {
+    public UserDto getUserInfo(String accessToken) {
         try{
             baseUrl = "https://kapi.kakao.com/v2/user/me";
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Authorization", "Bearer " + accessToken);
-
             HttpEntity<String> httpEntity = new HttpEntity<>("", httpHeaders);
 
             URI uri = UriComponentsBuilder
@@ -116,10 +100,17 @@ public class KakaoServiceImpl implements KakaoService {
 
             if(responseEntity.getStatusCode() == HttpStatus.OK){
                 LOGGER.info("Response UserInfo from Kakao");
-                UserEntity entity = new UserEntity(responseEntity.getBody().getId(),
+                UserEntity userEntity = new UserEntity(responseEntity.getBody().getId(),
                     responseEntity.getBody().getProperties().get("nickname"), "");
-                userRepository.save(entity);
-                return responseEntity.getBody();
+                UserDto userDto = new UserDto(userEntity.getId(), userEntity.getNickname());
+                if(userRepository.existsById(userEntity.getId())){
+                    LOGGER.info("already member");
+                }
+                else{
+                    userRepository.save(userEntity);
+                    LOGGER.info("save member");
+                }
+                return userDto;
             }
             else{
                 LOGGER.info("Failed Response UserInfo from Kakao, statusCode : {}", responseEntity.getStatusCode());
