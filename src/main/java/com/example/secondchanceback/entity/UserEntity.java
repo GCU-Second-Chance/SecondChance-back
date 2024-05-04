@@ -31,12 +31,15 @@ public class UserEntity{
     private Long id;
     @Column(nullable = false)
     private String nickname;
-    @Column
+
     private String takeaway;
 
-    public UserEntity(Long id, String nickname, String takeaway){
+    private Long sharing;
+
+    public UserEntity(Long id, String nickname, String takeaway, Long sharing){
         this.id = id;
         this.nickname = nickname;
         this.takeaway = takeaway;
+        this.sharing = sharing;
     }
 }

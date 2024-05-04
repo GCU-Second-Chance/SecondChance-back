@@ -23,4 +23,10 @@ import lombok.ToString;
 public class UserDto {
     private Long id;
     private String username;
+    private String takeaway;
+
+    public UserDto(Long id, String username){
+        this.id = id;
+        this.username = username;
+    }
 }

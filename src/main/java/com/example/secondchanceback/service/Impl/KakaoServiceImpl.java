@@ -101,7 +101,7 @@ public class KakaoServiceImpl implements KakaoService {
             if(responseEntity.getStatusCode() == HttpStatus.OK){
                 LOGGER.info("Response UserInfo from Kakao");
                 UserEntity userEntity = new UserEntity(responseEntity.getBody().getId(),
-                    responseEntity.getBody().getProperties().get("nickname"), "");
+                    responseEntity.getBody().getProperties().get("nickname"), "", 0L);
                 UserDto userDto = new UserDto(userEntity.getId(), userEntity.getNickname());
                 if(userRepository.existsById(userEntity.getId())){
                     LOGGER.info("already member");
