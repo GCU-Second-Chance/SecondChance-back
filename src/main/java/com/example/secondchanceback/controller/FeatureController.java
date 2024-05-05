@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/feature")
-@CrossOrigin(origins = "http://localhost:5173/outro")
 @RequiredArgsConstructor
 public class FeatureController {
 
@@ -35,6 +34,7 @@ public class FeatureController {
     private final FeatureService featureService;
 
     @PostMapping("/donation")
+    @CrossOrigin(origins = "http://localhost:5173/home")
     public ResponseEntity<DonationEntity> sharingUser(@RequestBody UserDto userDto){
         LOGGER.info("get UserDto : {}", userDto);
         UserEntity userEntity = featureService.donationUserUpdate(userDto);
@@ -48,6 +48,7 @@ public class FeatureController {
     }
 
     @PostMapping("/takeaway")
+    @CrossOrigin(origins = "http://localhost:5173/outro")
     public ResponseEntity<UserEntity> userTakeaway(@RequestBody UserDto userDto){
         return featureService.updateTakeaway(userDto);
     }
