@@ -34,10 +34,11 @@ public class FeatureController {
     private final FeatureService featureService;
 
     @PostMapping("/donation")
-    @CrossOrigin
+    @CrossOrigin(origins = "http://localhost:5173/home")
     public ResponseEntity<DonationEntity> sharingUser(@RequestBody UserDto userDto){
         LOGGER.info("get UserDto : {}", userDto);
         UserEntity userEntity = featureService.donationUserUpdate(userDto);
+        LOGGER.info("get UserEntity : {}", userEntity);
 
         if(userEntity != null) {
             return featureService.donationAmountUpdate();
@@ -48,7 +49,7 @@ public class FeatureController {
     }
 
     @PostMapping("/takeaway")
-    @CrossOrigin
+    @CrossOrigin(origins = "http://localhost:5173/outro")
     public ResponseEntity<UserEntity> userTakeaway(@RequestBody UserDto userDto){
         return featureService.updateTakeaway(userDto);
     }

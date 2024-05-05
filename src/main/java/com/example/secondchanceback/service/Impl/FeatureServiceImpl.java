@@ -39,8 +39,9 @@ public class FeatureServiceImpl implements FeatureService {
     @Transactional
     public UserEntity donationUserUpdate(UserDto userDto) {
         Optional<UserEntity> userEntity = findUser(userDto);
-
+        LOGGER.info("findUser : {}", userEntity);
         return userEntity.map(entity -> {
+            LOGGER.info("entity : {}", entity);
             entity.setSharing(entity.getSharing() + 1);
             return updateSharing(entity);
         }).orElse(null);
@@ -74,6 +75,7 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
     private Optional<UserEntity> findUser(UserDto userDto){
+        LOGGER.info("get UserDto : {} ", userDto);
         return userRepository.findById(userDto.getId());
     }
     private Optional<DonationEntity> findDonation(Long id){
@@ -86,6 +88,7 @@ public class FeatureServiceImpl implements FeatureService {
         return donationRepository.save(donationEntity);
     }
     private UserEntity updateUserTakeaway(UserEntity userEntity){
+        LOGGER.info("get userEntity : {}", userEntity);
         return userRepository.save(userEntity);
     }
 }
