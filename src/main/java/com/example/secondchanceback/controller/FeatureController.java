@@ -50,6 +50,7 @@ public class FeatureController {
 
     @PostMapping("/takeaway")
     public ResponseEntity<UserEntity> userTakeaway(@RequestBody UserDto userDto){
+        LOGGER.info("get UserDto : {}", userDto);
         return featureService.updateTakeaway(userDto);
     }
 }

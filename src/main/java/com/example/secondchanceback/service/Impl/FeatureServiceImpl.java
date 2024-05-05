@@ -63,10 +63,12 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     @Transactional
     public ResponseEntity<UserEntity> updateTakeaway(UserDto userDto) {
+        LOGGER.info("updateTakeaway(), userDto : {}", userDto);
         ResponseEntity<UserEntity> responseEntity;
         Optional<UserEntity> userEntity = findUser(userDto);
 
         responseEntity = userEntity.map(entity -> {
+            LOGGER.info("entity : {}", entity);
             entity.setTakeaway(userDto.getTakeaway());
             return new ResponseEntity<>(updateUserTakeaway(entity), HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
@@ -75,20 +77,23 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
     private Optional<UserEntity> findUser(UserDto userDto){
-        LOGGER.info("get UserDto : {} ", userDto);
+        LOGGER.info("findUser(), userDto : {} ", userDto);
         return userRepository.findById(userDto.getId());
     }
     private Optional<DonationEntity> findDonation(Long id){
+        LOGGER.info("findDonation, id : {} ", id);
         return donationRepository.findById(id);
     }
     private UserEntity updateSharing(UserEntity userEntity){
+        LOGGER.info("updateSharing, userEntity : {} ", userEntity);
         return userRepository.save(userEntity);
     }
     private DonationEntity updateDonation(DonationEntity donationEntity){
+        LOGGER.info("updateDonation, donationEntity : {} ", donationEntity);
         return donationRepository.save(donationEntity);
     }
     private UserEntity updateUserTakeaway(UserEntity userEntity){
-        LOGGER.info("get userEntity : {}", userEntity);
+        LOGGER.info("updateUserTakeaway(), userEntity : {}", userEntity);
         return userRepository.save(userEntity);
     }
 }
