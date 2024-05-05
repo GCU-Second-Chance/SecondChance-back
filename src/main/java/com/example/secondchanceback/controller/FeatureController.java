@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/vi/feature")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/v1/feature")
+@CrossOrigin
 @RequiredArgsConstructor
 public class FeatureController {
 
@@ -48,6 +48,7 @@ public class FeatureController {
     }
 
     @PostMapping("/takeaway")
+    @CrossOrigin(origins = "http://localhost:5173/outro")
     public ResponseEntity<UserEntity> userTakeaway(@RequestBody UserDto userDto){
         return featureService.updateTakeaway(userDto);
     }
