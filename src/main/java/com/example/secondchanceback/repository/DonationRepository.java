@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @GitHub :
  */
 
+@Qualifier("donationRepository")
 public interface DonationRepository extends JpaRepository<DonationEntity, Long> {
 
     Optional<DonationEntity> findById(Long id);

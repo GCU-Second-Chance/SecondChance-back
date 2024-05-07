@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @GitHub :
  */
 
+@Qualifier("userRepository")
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     public boolean existsById(Long id);

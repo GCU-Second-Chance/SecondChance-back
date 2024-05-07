@@ -3,6 +3,7 @@ package com.example.secondchanceback.service;
 import com.example.secondchanceback.dto.UserDto;
 import com.example.secondchanceback.entity.DonationEntity;
 import com.example.secondchanceback.entity.UserEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 
 /**
