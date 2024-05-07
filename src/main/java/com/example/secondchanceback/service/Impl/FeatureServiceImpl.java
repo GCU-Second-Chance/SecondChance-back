@@ -29,19 +29,14 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
+@RequiredArgsConstructor
 public class FeatureServiceImpl implements FeatureService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(FeatureServiceImpl.class);
 
-    @Qualifier("userRepository")
     private final UserRepository userRepository;
-    @Qualifier("donationRepository")
-    private final DonationRepository donationRepository;
 
-    public FeatureServiceImpl(UserRepository userRepository, DonationRepository donationRepository){
-        this.userRepository = userRepository;
-        this.donationRepository = donationRepository;
-    }
+    private final DonationRepository donationRepository;
 
     @Override
     @Transactional

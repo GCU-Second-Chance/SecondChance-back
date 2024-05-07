@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @PackageName : com.example.secondchanceback.repository
@@ -17,7 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @GitHub :
  */
 
-@Qualifier("userRepository")
+@Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     public boolean existsById(Long id);

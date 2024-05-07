@@ -29,14 +29,10 @@ import java.net.URI;
  */
 
 @Service
+@RequiredArgsConstructor
 public class KakaoServiceImpl implements KakaoService {
 
-    @Qualifier("userRepository")
     private final UserRepository userRepository;
-
-    public KakaoServiceImpl(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
 
     private Logger LOGGER = LoggerFactory.getLogger(KakaoServiceImpl.class);
     private String baseUrl;
