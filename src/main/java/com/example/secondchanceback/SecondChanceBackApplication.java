@@ -11,9 +11,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@SpringBootApplication(scanBasePackages = "com.example.secondchanceback.repository")
+@SpringBootApplication(scanBasePackages = "com.example.secondchanceback")
 @RequiredArgsConstructor
+@EnableTransactionManagement
 public class SecondChanceBackApplication implements CommandLineRunner {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SecondChanceBackApplication.class);

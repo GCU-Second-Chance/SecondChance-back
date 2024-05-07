@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @PackageName : com.example.secondchanceback.repository
@@ -16,7 +17,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @Blog : https://blog.naver.com/noglass_gongdae
  * @GitHub :
  */
-
 @Qualifier("donationRepository")
 public interface DonationRepository extends JpaRepository<DonationEntity, Long> {
 
