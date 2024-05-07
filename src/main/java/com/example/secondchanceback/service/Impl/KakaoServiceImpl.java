@@ -9,6 +9,8 @@ import com.example.secondchanceback.service.KakaoService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import java.net.URI;
 public class KakaoServiceImpl implements KakaoService {
 
     private final UserRepository userRepository;
+
     private Logger LOGGER = LoggerFactory.getLogger(KakaoServiceImpl.class);
     private String baseUrl;
     private String path;
