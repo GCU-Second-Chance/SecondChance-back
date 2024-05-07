@@ -29,7 +29,7 @@ import lombok.ToString;
 public class UserEntity{
     @Id
     private Long id;
-    @Column(nullable = false)
+
     private String nickname;
 
     private String takeaway;

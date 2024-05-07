@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @GitHub :
  */
 @Qualifier("donationRepository")
-public interface DonationRepository extends CrudRepository<DonationEntity, Long> {
+public interface DonationRepository extends JpaRepository<DonationEntity, Long> {
     Optional<DonationEntity> findById(Long id);
 
 }
