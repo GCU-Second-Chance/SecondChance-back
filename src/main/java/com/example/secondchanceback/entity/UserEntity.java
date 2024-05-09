@@ -23,6 +23,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "second_chance_user")
 @ToString
 @Entity
@@ -36,10 +37,5 @@ public class UserEntity{
 
     private Long sharing;
 
-    public UserEntity(Long id, String nickname, String takeaway, Long sharing){
-        this.id = id;
-        this.nickname = nickname;
-        this.takeaway = takeaway;
-        this.sharing = sharing;
-    }
+    private String role;
 }
