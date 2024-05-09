@@ -1,6 +1,7 @@
 package com.example.secondchanceback.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,16 +20,11 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
 public class UserDto {
+    private String token;
     private Long id;
     private String username;
     private String takeaway;
-
-    public UserDto(Long id, String username){
-        this.id = id;
-        this.username = username;
-    }
-
-
 }

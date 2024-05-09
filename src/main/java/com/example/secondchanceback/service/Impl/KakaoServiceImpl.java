@@ -6,12 +6,15 @@ import com.example.secondchanceback.dto.UserDto;
 import com.example.secondchanceback.entity.UserEntity;
 import com.example.secondchanceback.repository.UserRepository;
 import com.example.secondchanceback.service.KakaoService;
+import jakarta.transaction.Transactional;
+import java.lang.reflect.Member;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -103,17 +106,15 @@ public class KakaoServiceImpl implements KakaoService {
 
             if(responseEntity.getStatusCode() == HttpStatus.OK){
                 LOGGER.info("Response UserInfo from Kakao");
-                UserEntity userEntity = new UserEntity(responseEntity.getBody().getId(),
-                    responseEntity.getBody().getProperties().get("nickname"), "", 0L, "ROLE_USER");
-                UserDto userDto = new UserDto(userEntity.getId(), userEntity.getNickname());
-                if(userRepository.existsById(userEntity.getId())){
-                    LOGGER.info("already member");
-                }
-                else{
-                    userRepository.save(userEntity);
-                    LOGGER.info("save member");
-                }
-                return userDto;
+                UserEntity userEntity = UserEntity.builder()
+                    .id(responseEntity.getBody().getId())
+                    .nickname(responseEntity.getBody().getProperties().get("nickname"))
+                    .takeaway("")
+                    .sharing(0L)
+                    .role("ROLE_USER")
+                    .build();
+
+                return register(userEntity);
             }
             else{
                 LOGGER.info("Failed Response UserInfo from Kakao, statusCode : {}", responseEntity.getStatusCode());
@@ -128,5 +129,14 @@ public class KakaoServiceImpl implements KakaoService {
     @Override
     public String logout(String accessToken) {
         return null;
+    }
+
+    @Transactional
+    public UserDto register(UserEntity userEntity){
+        UserEntity user = userRepository.findById(userEntity.getId()).orElseGet(()->userRepository.save(userEntity));
+        return UserDto.builder()
+            .id(user.getId())
+            .username(user.getNickname())
+            .build();
     }
 }
