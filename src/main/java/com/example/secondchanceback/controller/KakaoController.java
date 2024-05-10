@@ -34,13 +34,12 @@ public class KakaoController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(KakaoController.class);
 
-    @PostMapping("/kakao-login")
-    public ResponseEntity<UserDto> kakaoLogin(@RequestBody KakaoLoginDto kakaoLoginDto) {
-        String code = kakaoLoginDto.getCode();
+    @GetMapping("/kakao-login")
+    public ResponseEntity<UserDto> kakaoLogin(@RequestParam("code") String code) {
         LOGGER.info("Get Code from FrontEnd : {}", code);
 
         LOGGER.info("Request getAccessToken()");
-        kakaoLoginDto = kakaoService.getAccessToken(code);
+        KakaoLoginDto kakaoLoginDto = kakaoService.getAccessToken(code);
         String accessToken = kakaoLoginDto.getAccess_token();
         LOGGER.info("access_token : {}", accessToken);
 
