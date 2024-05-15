@@ -1,6 +1,7 @@
 package com.example.secondchanceback;
 
 import com.example.secondchanceback.entity.DonationEntity;
+import com.example.secondchanceback.repository.DonationRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
