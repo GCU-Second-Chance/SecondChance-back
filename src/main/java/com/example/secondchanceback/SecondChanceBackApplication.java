@@ -1,16 +1,12 @@
 package com.example.secondchanceback;
 
 import com.example.secondchanceback.entity.DonationEntity;
-import com.example.secondchanceback.repository.DonationRepository;
-import com.example.secondchanceback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = "com.example.secondchanceback.repository")
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package com.example.secondchanceback.controller;
 
-import com.example.secondchanceback.dto.UserDto;
+import com.example.secondchanceback.dto.CustomOAuth2User;
 import com.example.secondchanceback.entity.DonationEntity;
 import com.example.secondchanceback.entity.UserEntity;
 import com.example.secondchanceback.service.FeatureService;
@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,20 +27,24 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/v1/feature")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/v1/feature")
 public class FeatureController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(FeatureController.class);
 
     private final FeatureService featureService;
 
-    @PostMapping("/donation")
-    public ResponseEntity<DonationEntity> sharingUser(@RequestBody UserDto userDto){
-        LOGGER.info("get UserDto : {}", userDto);
-        UserEntity userEntity = featureService.donationUserUpdate(userDto);
-        LOGGER.info("get UserEntity : {}", userEntity);
+    @GetMapping("/donation")
+    public ResponseEntity<DonationEntity> sharingUser(){
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LOGGER.info("FeatureController_sharingUser_authentication : {}", authentication);
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        String username = customOAuth2User.getUsername();
+        LOGGER.info("FeatureController_sharingUser_username : {}", username);
+
+        UserEntity userEntity = featureService.donationUserUpdate(username);
 
         if(userEntity != null) {
             return featureService.donationAmountUpdate();
@@ -49,8 +55,13 @@ public class FeatureController {
     }
 
     @PostMapping("/takeaway")
-    public ResponseEntity<UserEntity> userTakeaway(@RequestBody UserDto userDto){
-        LOGGER.info("get UserDto : {}", userDto);
-        return featureService.updateTakeaway(userDto);
+    public ResponseEntity<UserEntity> userTakeaway(@RequestBody String takeaway){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        String username = customOAuth2User.getUsername();
+
+        LOGGER.info("FeatureController_userTakeaway_username username : {}", username);
+
+        return featureService.updateTakeaway(takeaway, username);
     }
 }
