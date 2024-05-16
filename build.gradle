@@ -35,8 +35,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //
-    implementation 'com.h2database:h2'
+    //implementation 'com.h2database:h2'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
