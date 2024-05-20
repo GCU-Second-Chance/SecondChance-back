@@ -9,7 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "com.example.secondchanceback.repository")
+@SpringBootApplication
 @RequiredArgsConstructor
 public class SecondChanceBackApplication implements CommandLineRunner {
 
