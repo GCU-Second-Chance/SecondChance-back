@@ -6,6 +6,7 @@ import com.example.secondchanceback.jwt.JWTUtil;
 import com.example.secondchanceback.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,9 +36,10 @@ public class SecurityConfig {
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
 
-    @Value("${redirect.location}")
-    private String successUrl;
+    @Value("${frontend.address}")
+    private String address;
 
+    @Autowired
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil){
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
@@ -99,7 +101,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         httpSecurity
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/" /*"/h2-console/**"*/).permitAll()
+                .requestMatchers("/", "/login/**").permitAll()
                 .requestMatchers("/v1/feature/**").hasRole("USER")
                 .anyRequest().authenticated());
         //세션 설정 : STATELESS
@@ -115,7 +117,7 @@ public class SecurityConfig {
 
                     CorsConfiguration configuration = new CorsConfiguration();
 
-                    configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                    configuration.setAllowedOrigins(Collections.singletonList(address));
                     configuration.setAllowedMethods(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true); //서버가 클라이언트에게 인증된 사용자 정보를 전달할 수 있는지 여부를 결정
                     configuration.setAllowedHeaders(Collections.singletonList("*")); // 모든 헤더 허용
@@ -129,10 +131,10 @@ public class SecurityConfig {
             }));
 
         //h2 콘솔 사용을 위함
-            httpSecurity
-                .csrf(csrf -> csrf.disable());
-            httpSecurity
-                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
+//            httpSecurity
+//                .csrf(csrf -> csrf.disable());
+//            httpSecurity
+//                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
         return httpSecurity.build();
     }
 }
