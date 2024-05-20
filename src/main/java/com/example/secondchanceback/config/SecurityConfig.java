@@ -99,7 +99,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         httpSecurity
             .authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/" /*"/h2-console/**"*/).permitAll()
+                .requestMatchers("/","/login/ouath2/**" /*"/h2-console/**"*/).permitAll()
                 .requestMatchers("/v1/feature/**").hasRole("USER")
                 .anyRequest().authenticated());
         //세션 설정 : STATELESS
