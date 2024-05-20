@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/feature")
-@CrossOrigin (origins = "https://web-secondchance-front-test2-1cupyg2klvnmgdft.sel5.cloudtype.app")
 public class FeatureController {
 
     private final Logger LOGGER = LoggerFactory.getLogger(FeatureController.class);
