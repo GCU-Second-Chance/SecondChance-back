@@ -64,7 +64,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return;
         }
         response.addCookie(createCookie("Authorization", token));
-        getRedirectStrategy().sendRedirect(request, response, location);
+        getRedirectStrategy().sendRedirect(location);
     }
 
     private Cookie createCookie(String key, String value){
