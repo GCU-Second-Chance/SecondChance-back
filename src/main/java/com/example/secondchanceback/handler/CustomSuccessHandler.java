@@ -17,15 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-/**
- * @PackageName : com.example.second_chance_back.handler
- * @FileName : CustomSuccessHandler
- * @Author : noglass_gongdae
- * @Date : 2024-05-10
- * @Blog : https://blog.naver.com/noglass_gongdae
- * @GitHub :
- */
-
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
@@ -44,8 +35,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
-        //정답! response가 이미 commit되는 이유였음
-        //super.onAuthenticationSuccess(request, response, authentication);
 
         LOGGER.info("onAuthenticationSuccess Processing");
 
@@ -57,14 +46,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token =jwtUtil.createJwt(username, role, 60*60*60L);
-        //response.sendRedirect(location); //성공 시 띄울 페이지(메인 페이지)
+        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+
         if (response.isCommitted()) {
-            logger.debug("응답이 이미 커밋된 상태입니다. " + location + "로 리다이렉트하도록 바꿀 수 없습니다.");
+            LOGGER.debug("응답이 이미 커밋된 상태입니다. " + location + "로 리다이렉트하도록 바꿀 수 없습니다.");
             return;
         }
+
         response.addCookie(createCookie("Authorization", token));
-        getRedirectStrategy().sendRedirect(location);
+        getRedirectStrategy().sendRedirect(request, response, location);
     }
 
     private Cookie createCookie(String key, String value){
