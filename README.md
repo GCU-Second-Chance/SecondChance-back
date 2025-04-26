@@ -3,7 +3,7 @@
 이 프로젝트는 프론트 1, 백엔드 1 총 2명으로 구성되었으며, <br>
 교내 공모전 `사회공헌 프로젝트`를 참여하여 2등을 수상하게 되었습니다.
 
-[시연 영상](https://www.youtube.com/shorts/jXJw5LUQXG8)
+## [시연 영상](https://www.youtube.com/shorts/jXJw5LUQXG8)
 
 ## 백엔드 기능 🛠
 1. Oauth2.0 + JWT를 이용한 사용자 인증 시스템 구현
